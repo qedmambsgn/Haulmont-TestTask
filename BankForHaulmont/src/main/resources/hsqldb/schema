@@ -1,0 +1,59 @@
+DROP TABLE clients IF EXISTS;
+DROP TABLE credits IF EXISTS;
+DROP TABLE bank IF EXISTS;
+DROP TABLE payments IF EXISTS;
+DROP TABLE bank_payments IF EXISTS;
+
+
+CREATE TABLE clients
+(
+    id          UUID IDENTITY PRIMARY KEY,
+    first_name  VARCHAR(30),
+    second_name VARCHAR(30),
+    third_name  VARCHAR(30),
+    telephone   VARCHAR(30),
+    passport    VARCHAR(30),
+    email       VARCHAR(30)
+);
+
+
+CREATE TABLE credits
+(
+    id      UUID IDENTITY PRIMARY KEY,
+    percent FLOAT,
+    limit   FLOAT
+);
+
+
+CREATE TABLE bank
+(
+    id        UUID IDENTITY PRIMARY KEY,
+    credit_id UUID,
+    client_id UUID
+);
+ALTER TABLE bank ADD CONSTRAINT fk_bank_clients FOREIGN KEY (client_id) REFERENCES clients (id);
+ALTER TABLE bank ADD CONSTRAINT fk_bank_credits FOREIGN KEY (credit_id) REFERENCES credits (id);
+
+
+CREATE TABLE payments
+(
+    id           UUID IDENTITY PRIMARY KEY,
+    date_payment DATE,
+    summa        FLOAT,
+    period       INTEGER,
+    bank_id      UUID
+);
+ALTER TABLE payments ADD CONSTRAINT fk_payments_bank FOREIGN KEY (bank_id) REFERENCES bank (id);
+
+
+CREATE TABLE bank_payments
+(
+    id                 UUID IDENTITY PRIMARY KEY,
+    bank_payments_date DATE,
+    fee                FLOAT,
+    payments_id        UUID,
+    percent_fee        FLOAT,
+    body_fee           FLOAT,
+    over_price         FLOAT
+);
+ALTER TABLE bank_payments ADD CONSTRAINT fk_bank_payments_payments FOREIGN KEY (payments_id) REFERENCES payments (id);
